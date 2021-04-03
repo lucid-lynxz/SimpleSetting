@@ -24,12 +24,15 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionCallback {
         })
     }
 
-    protected fun requestPermission(permission: String) {
-        permissionFrag?.requestPermission(permission, this)
+    protected fun requestPermission(permission: String, callback: IPermissionCallback? = this) {
+        permissionFrag?.requestPermission(permission, callback)
     }
 
-    protected fun requestPermissions(permissions: Array<String>) {
-        permissionFrag?.requestPermissions(permissions, this)
+    protected fun requestPermissions(
+        permissions: Array<String>,
+        callback: IPermissionCallback? = this
+    ) {
+        permissionFrag?.requestPermissions(permissions, callback)
     }
 
     override fun onRequestResult(permission: PermissionResultInfo) {
