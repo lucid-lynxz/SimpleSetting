@@ -10,8 +10,8 @@ android {
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
         applicationId "org.lynxz.simplesetting"
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +37,16 @@ android {
             initWith(debug)
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // 自定义生成的apk名称
+    android.applicationVariants.all { variant ->
+        // 指定输出目录
+        // variant.getPackageApplication().outputDirectory = new File(project.rootDir.absolutePath + "/apks")
+        // 指定输入文件名称
+        variant.outputs.all {
+            outputFileName = "简单设置_${buildType.name}_v${defaultConfig.versionName}.apk"
         }
     }
 }

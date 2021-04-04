@@ -1,5 +1,6 @@
 package org.lynxz.simplesetting.ui.base
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -39,6 +40,7 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionCallback {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT // 竖屏
         super.onCreate(savedInstanceState)
         BackgroundLibrary.inject(this)
         beforeSetContentView()

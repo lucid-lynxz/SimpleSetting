@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.lynxz.simplesetting.R
 import org.lynxz.simplesetting.showToast
 import org.lynxz.simplesetting.ui.base.BaseActivity
+import org.lynxz.simplesetting.util.CommonUtil
 import org.lynxz.simplesetting.util.OnSoundIndexChanged
 import org.lynxz.simplesetting.util.SoundUtil
 import org.lynxz.utils.no
@@ -39,6 +40,17 @@ class MainActivity : BaseActivity() {
         btn_volume_fix.setOnClickListener { adjustVolume(false, 0.8) }
         // 跳转音量设置页面
         btn_sound_setting.setOnClickListener { startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) }
+
+        // 启动app: 小米通话, 信息转发
+        btn_mi_call.setOnClickListener { launch("小米通话", "com.xiaomi.mitime") }
+        btn_forward_sms.setOnClickListener { launch("短信转发", "org.lynxz.forwardsms") }
+    }
+
+    private fun launch(appName: String, pkgName: String) {
+        val exist = CommonUtil.launch(this, pkgName)
+        if (!exist) {
+            showToast("未安装该app:$appName")
+        }
     }
 
     /**

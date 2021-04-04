@@ -13,9 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:gravity="center_vertical"
-        android:minWidth="70dp"
+        android:minWidth="90dp"
         android:text="音量: 0"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_size_xlarge"
+        android:textStyle="bold"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/btn_volume_decrease"
@@ -23,44 +24,69 @@
 
     <Button
         android:id="@+id/btn_volume_decrease"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/btn"
         android:layout_marginLeft="10dp"
         android:text=" - "
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/tv_volume"
         app:layout_constraintLeft_toRightOf="@+id/tv_volume"
         app:layout_constraintTop_toTopOf="@+id/tv_volume" />
 
     <Button
         android:id="@+id/btn_volume_increase"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/btn"
         android:layout_marginLeft="10dp"
         android:text=" + "
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/btn_volume_decrease"
         app:layout_constraintLeft_toRightOf="@+id/btn_volume_decrease"
         app:layout_constraintTop_toTopOf="@+id/btn_volume_decrease" />
 
     <Button
         android:id="@+id/btn_volume_fix"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/btn"
+        android:layout_marginTop="10dp"
         android:text="80%"
-        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="@+id/btn_volume_decrease"
         app:layout_constraintTop_toBottomOf="@+id/btn_volume_decrease" />
 
     <Button
         android:id="@+id/btn_sound_setting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/btn"
         android:layout_marginLeft="10dp"
         android:text="音量设置页面"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/btn_volume_fix"
         app:layout_constraintLeft_toRightOf="@+id/btn_volume_fix"
         app:layout_constraintTop_toTopOf="@+id/btn_volume_fix" />
 
+    <TextView
+        android:id="@+id/tv_lauch_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center_vertical"
+        android:minWidth="70dp"
+        android:text="启动软件"
+        android:textSize="@dimen/text_size_xlarge"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="@id/tv_volume"
+        app:layout_constraintTop_toBottomOf="@+id/btn_volume_fix" />
+
+    <Button
+        android:id="@+id/btn_mi_call"
+        style="@style/btn"
+        android:text="小米通话"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_lauch_app"
+        app:layout_constraintLeft_toLeftOf="@+id/btn_volume_decrease"
+        app:layout_constraintLeft_toRightOf="@+id/tv_lauch_app"
+        app:layout_constraintRight_toLeftOf="@+id/btn_forward_sms"
+        app:layout_constraintTop_toTopOf="@+id/tv_lauch_app" />
+
+    <Button
+        android:id="@+id/btn_forward_sms"
+        style="@style/btn"
+        android:layout_marginLeft="10dp"
+        android:text="短信转发"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_mi_call"
+        app:layout_constraintLeft_toRightOf="@+id/btn_mi_call"
+        app:layout_constraintTop_toTopOf="@+id/btn_mi_call" />
 </androidx.constraintlayout.widget.ConstraintLayout>
