@@ -40,7 +40,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickLis
         when (v?.id) {
             R.id.btn_volume_decrease -> adjustVolume(false) // 减小音量
             R.id.btn_volume_increase -> adjustVolume(true) // 增加音量
-            R.id.btn_volume_fix -> adjustVolume(false, 0.8) // 设置音量为80%
+            R.id.btn_volume_fix_50 -> adjustVolume(false, 0.5) // 设置音量为50%
+            R.id.btn_volume_fix_80 -> adjustVolume(false, 0.8) // 设置音量为80%
             R.id.btn_sound_setting -> startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) // 音量设置页面
             R.id.btn_mi_call -> launch("小米通话", "com.xiaomi.mitime") // 启动小米通话app
             R.id.btn_forward_sms -> launch("短信转发", "org.lynxz.forwardsms") // 启动短信转发app
