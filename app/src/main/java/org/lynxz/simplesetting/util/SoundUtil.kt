@@ -9,7 +9,12 @@ import org.lynxz.simplesetting.observer.OnSettingChanged
 import org.lynxz.simplesetting.observer.SettingsContentObserver
 import org.lynxz.utils.log.LoggerUtil
 
-typealias OnSoundIndexChanged = (streamType: Int, lastIndex: Int, curIndex: Int) -> Unit
+/**
+ * 音量变化时回调
+ * @param soundInfo 音量数据
+ * @param lastIndex 变化前的音量值
+ * */
+typealias OnSoundIndexChanged = (soundInfo: SoundInfoBean, lastIndex: Int) -> Unit
 
 /**
  * 声音管理, 用于调节音量, 获取当前音量等
@@ -20,11 +25,11 @@ typealias OnSoundIndexChanged = (streamType: Int, lastIndex: Int, curIndex: Int)
  *     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
  *
  * <pre>
- *     // 跳转到勿扰权限页面
+ *     // 跳转到勿扰权限页面,手动开启
  *     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
  *     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !notificationManager.isNotificationPolicyAccessGranted) {
  *          startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
- *          showToast("请先允许\"勿扰\" 权限")
+ *          showToast("请先允许 \"勿扰\" 权限")
  *          return
  *     }
  * </pre>
@@ -39,7 +44,7 @@ object SoundUtil {
     private const val DEFAULT_STREAM = AudioManager.STREAM_RING
 
     // 各铃声当前音量
-    private val volumeIndexMap = mutableMapOf<Int, Int>()
+    private val volumeIndexMap = mutableMapOf<Int, SoundInfoBean>()
 
     // 支持的铃声类型
     private val streamTypes = listOf(
@@ -58,8 +63,9 @@ object SoundUtil {
 
         // 记录各音量初始值
         streamTypes.forEach {
-            volumeIndexMap[it] = getVolume(it)
-            LoggerUtil.d(TAG, "初始音量 type=$it(0:通话 2:铃声 3:媒体 4:闹钟), ${volumeIndexMap[it]}")
+            volumeIndexMap[it] =
+                SoundInfoBean(it, getMaxVolume(it), getMinVolume(it), getVolume(it))
+            LoggerUtil.d(TAG, "${volumeIndexMap[it]}")
         }
 
         // 注册音量变化回调
@@ -67,14 +73,15 @@ object SoundUtil {
             override fun invoke(selfChange: Boolean, uri: Uri?) {
                 streamTypes.forEach { steamType ->
                     val curIndex = getVolume(steamType)
-                    val lastIndex = volumeIndexMap[steamType] ?: 0
+                    val soundInfo = volumeIndexMap[steamType] ?: return
+                    val lastIndex = soundInfo.index
                     if (curIndex != lastIndex) {
                         LoggerUtil.d(
                             TAG,
-                            "onSoundChanged $steamType(0:通话 2:铃声 3:媒体 4:闹钟), $lastIndex -> $curIndex"
+                            "onSoundChanged: $soundInfo -> $curIndex"
                         )
-                        volumeIndexMap[steamType] = curIndex
-                        onSoundChanged?.invoke(steamType, lastIndex, curIndex)
+                        soundInfo.index = curIndex
+                        onSoundChanged?.invoke(soundInfo, lastIndex)
                     }
                 }
             }
@@ -86,13 +93,6 @@ object SoundUtil {
             settingContentObserver!!
         )
     }
-
-//    /**
-//     * 音量发生变化时回调监听器
-//     * */
-//    fun setOnSoundVolumeChange(action: OnSettingChanged?) = this.apply {
-//        onSoundVolumeChange = action
-//    }
 
     fun uninit() {
         settingContentObserver?.let {
@@ -114,6 +114,11 @@ object SoundUtil {
     fun exitSilentMode() = this.apply { audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL }
 
     /**
+     * 获取音量数据信息
+     * */
+    fun getSoundInfo(streamType: Int = DEFAULT_STREAM): SoundInfoBean? = volumeIndexMap[streamType]
+
+    /**
      * 获取当前音量
      * @param streamType 类型
      *              AudioManager.STREAM_MUSIC: 媒体音量
@@ -129,6 +134,16 @@ object SoundUtil {
     fun getMaxVolume(streamType: Int = DEFAULT_STREAM) =
         audioManager.getStreamMaxVolume(streamType)
 
+    /**
+     * 获取指定声音的最小音量
+     * */
+    fun getMinVolume(streamType: Int = DEFAULT_STREAM) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            audioManager.getStreamMinVolume(streamType)
+        } else {
+            0
+        }
+
 
     /**
      * 设置音量
@@ -139,12 +154,8 @@ object SoundUtil {
         flags: Int = AudioManager.FLAG_PLAY_SOUND,
         streamType: Int = DEFAULT_STREAM
     ) = this.apply {
-        val max = audioManager.getStreamMaxVolume(streamType)
-        val min = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            audioManager.getStreamMinVolume(streamType)
-        } else {
-            0
-        }
+        val max = getMaxVolume(streamType)
+        val min = getMinVolume(streamType)
 
         val tIndex = when {
             index < min -> min
@@ -152,8 +163,14 @@ object SoundUtil {
             else -> index
         }
 
-        LoggerUtil.d(TAG, "setVolume $streamType: $tIndex")
+        LoggerUtil.d(
+            TAG,
+            "setVolume $streamType: $tIndex ${SoundInfoBean.getSoundName(streamType)}"
+        )
         audioManager.setStreamVolume(streamType, tIndex, flags)
+        volumeIndexMap[streamType]?.apply {
+            this.index = tIndex
+        }
     }
 
 

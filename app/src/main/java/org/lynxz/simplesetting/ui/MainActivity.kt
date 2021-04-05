@@ -3,48 +3,50 @@ package org.lynxz.simplesetting.ui
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import kotlinx.android.synthetic.main.activity_main.*
 import org.lynxz.simplesetting.R
+import org.lynxz.simplesetting.databinding.ActivityMainBinding
 import org.lynxz.simplesetting.showToast
-import org.lynxz.simplesetting.ui.base.BaseActivity
+import org.lynxz.simplesetting.ui.base.BaseBindingActivity
 import org.lynxz.simplesetting.util.CommonUtil
 import org.lynxz.simplesetting.util.OnSoundIndexChanged
+import org.lynxz.simplesetting.util.SoundInfoBean
 import org.lynxz.simplesetting.util.SoundUtil
-import org.lynxz.utils.no
-import org.lynxz.utils.trans.IPermissionCallback
-import org.lynxz.utils.trans.PermissionResultInfo
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickListener {
     private val TAG = "MainActivity"
 
     override fun getLayoutRes() = R.layout.activity_main
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun afterViewCreated() {
+        dataBinding.clickAction = this
         SoundUtil.init(this, object : OnSoundIndexChanged {
-            override fun invoke(streamType: Int, lastIndex: Int, curIndex: Int) {
+            override fun invoke(soundInfo: SoundInfoBean, lastIndex: Int) {
                 updateVolume()
             }
         })
 
         updateVolume()
-        // 音量加减
-        btn_volume_increase.setOnClickListener { adjustVolume(true) }
-        btn_volume_decrease.setOnClickListener { adjustVolume(false) }
-        // 一步到位设定为80%
-        btn_volume_fix.setOnClickListener { adjustVolume(false, 0.8) }
-        // 跳转音量设置页面
-        btn_sound_setting.setOnClickListener { startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) }
-
-        // 启动app: 小米通话, 信息转发
-        btn_mi_call.setOnClickListener { launch("小米通话", "com.xiaomi.mitime") }
-        btn_forward_sms.setOnClickListener { launch("短信转发", "org.lynxz.forwardsms") }
     }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.btn_volume_decrease -> adjustVolume(false) // 减小音量
+            R.id.btn_volume_increase -> adjustVolume(true) // 增加音量
+            R.id.btn_volume_fix -> adjustVolume(false, 0.8) // 设置音量为80%
+            R.id.btn_sound_setting -> startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) // 音量设置页面
+            R.id.btn_mi_call -> launch("小米通话", "com.xiaomi.mitime") // 启动小米通话app
+            R.id.btn_forward_sms -> launch("短信转发", "org.lynxz.forwardsms") // 启动短信转发app
+        }
+    }
+
 
     private fun launch(appName: String, pkgName: String) {
         val exist = CommonUtil.launch(this, pkgName)
@@ -70,33 +72,23 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        // 退出勿扰/静音模式
+        // 退出勿扰/静音模式,并根据铃声音量递增/递减 10%
         SoundUtil.exitSilentMode()
-        requestPermission(
-            android.Manifest.permission.MODIFY_AUDIO_SETTINGS,
-            object : IPermissionCallback {
-                override fun onAllRequestResult(allGranted: Boolean) {
-                    super.onAllRequestResult(allGranted)
-                    val max = SoundUtil.getMaxVolume()
-                    val cur = SoundUtil.getVolume()
-
-                    val delta = if (increase) 1 else -1
-                    var tRatio = (cur + delta) * 1.0 / max
-                    if (ratio in 0.0..1.0) {
-                        tRatio = ratio
-                    }
-                    SoundUtil.setAllVolume(tRatio)
+            .getSoundInfo(AudioManager.STREAM_RING)?.apply {
+                val flag = if (increase) 1 else -1
+                val deltaIndex = 1.coerceAtLeast((maxVolume * 0.1).toInt())
+                val tIndex = maxVolume.coerceAtMost(index + flag * deltaIndex)
+                val tRatio = if (ratio in 0.0..1.0) {
+                    ratio
+                } else {
+                    tIndex * 1.0 / maxVolume
                 }
-
-                override fun onRequestResult(permission: PermissionResultInfo) {
-                    permission.granted.no {
-                        showToast("需要修改系统音量权限, 请授予后重试")
-                    }
-                }
-            })
+                SoundUtil.setAllVolume(tRatio)
+                updateVolume()
+            }
     }
 
     private fun updateVolume() {
-        tv_volume.text = "音量: ${SoundUtil.getVolume()} "
+        dataBinding.tvVolume.text = "音量:\n${SoundUtil.getSoundInfo()?.getPercent()} "
     }
 }
