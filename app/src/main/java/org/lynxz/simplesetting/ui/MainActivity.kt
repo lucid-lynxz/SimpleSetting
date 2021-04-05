@@ -13,10 +13,8 @@ import org.lynxz.simplesetting.R
 import org.lynxz.simplesetting.databinding.ActivityMainBinding
 import org.lynxz.simplesetting.showToast
 import org.lynxz.simplesetting.ui.base.BaseBindingActivity
-import org.lynxz.simplesetting.util.CommonUtil
-import org.lynxz.simplesetting.util.OnSoundIndexChanged
-import org.lynxz.simplesetting.util.SoundInfoBean
-import org.lynxz.simplesetting.util.SoundUtil
+import org.lynxz.simplesetting.util.*
+import org.lynxz.utils.ShellUtil
 
 
 class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickListener {
@@ -33,6 +31,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickLis
             }
         })
 
+        // 5.0以上开启数据流量需要root权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !ShellUtil.checkRootPermission()) {
+            dataBinding.btnOpenMobileData.visibility = View.GONE
+        }
         updateVolume()
     }
 
@@ -45,6 +47,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickLis
             R.id.btn_sound_setting -> startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) // 音量设置页面
             R.id.btn_mi_call -> launch("小米通话", "com.xiaomi.mitime") // 启动小米通话app
             R.id.btn_forward_sms -> launch("短信转发", "org.lynxz.forwardsms") // 启动短信转发app
+            R.id.btn_open_mobile_data -> NetworkUtils.openMobileData(this, true)
+            R.id.btn_open_wifi -> NetworkUtils.setWifiEnabled(this, true)
         }
     }
 
