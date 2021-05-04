@@ -224,19 +224,12 @@ public final class NetworkUtils {
      * @param enabled True to enabled, false otherwise.
      */
     @SuppressLint("MissingPermission")
-    public static void setWifiEnabled(Context context, boolean enabled) {
+    public static boolean setWifiEnabled(Context context, boolean enabled) {
         @SuppressLint("WifiManagerLeak")
         WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (manager == null) return;
-        if (enabled) {
-            if (!manager.isWifiEnabled()) {
-                manager.setWifiEnabled(true);
-            }
-        } else {
-            if (manager.isWifiEnabled()) {
-                manager.setWifiEnabled(false);
-            }
-        }
+        if (manager == null) return false;
+        return enabled == manager.isWifiEnabled()
+                || manager.setWifiEnabled(enabled);
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.lynxz.simplesetting.ui
 
+import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -15,6 +16,8 @@ import org.lynxz.simplesetting.showToast
 import org.lynxz.simplesetting.ui.base.BaseBindingActivity
 import org.lynxz.simplesetting.util.*
 import org.lynxz.utils.ShellUtil
+import org.lynxz.utils.otherwise
+import org.lynxz.utils.yes
 
 
 class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickListener {
@@ -42,13 +45,19 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickLis
         when (v?.id) {
             R.id.btn_volume_decrease -> adjustVolume(false) // 减小音量
             R.id.btn_volume_increase -> adjustVolume(true) // 增加音量
-            R.id.btn_volume_fix_50 -> adjustVolume(false, 0.5) // 设置音量为50%
             R.id.btn_volume_fix_80 -> adjustVolume(false, 0.8) // 设置音量为80%
-            R.id.btn_sound_setting -> startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) // 音量设置页面
+            R.id.btn_volume_fix_100 -> adjustVolume(false, 1.0) // 设置音量为100%
+            R.id.btn_sound_setting -> startActivity(Intent(Settings.ACTION_SOUND_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }) // 音量设置页面
             R.id.btn_mi_call -> launch("小米通话", "com.xiaomi.mitime") // 启动小米通话app
             R.id.btn_forward_sms -> launch("短信转发", "org.lynxz.forwardsms") // 启动短信转发app
             R.id.btn_open_mobile_data -> NetworkUtils.openMobileData(this, true)
-            R.id.btn_open_wifi -> NetworkUtils.setWifiEnabled(this, true)
+            R.id.btn_open_wifi -> NetworkUtils.setWifiEnabled(this, true).yes {
+                showToast("已开启wifi")
+            }.otherwise {
+                showToast("开启wifi失败,请重试")
+            }
         }
     }
 

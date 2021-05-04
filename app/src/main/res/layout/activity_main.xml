@@ -52,23 +52,23 @@
             app:layout_constraintTop_toTopOf="@+id/btn_volume_decrease" />
 
         <Button
-            android:id="@+id/btn_volume_fix_50"
+            android:id="@+id/btn_volume_fix_80"
             style="@style/btn"
             android:layout_marginTop="10dp"
             android:onClick="@{clickAction::onClick}"
-            android:text="50%"
+            android:text="80%"
             app:layout_constraintLeft_toLeftOf="@+id/btn_volume_decrease"
             app:layout_constraintTop_toBottomOf="@+id/btn_volume_decrease" />
 
         <Button
-            android:id="@+id/btn_volume_fix_80"
+            android:id="@+id/btn_volume_fix_100"
             style="@style/btn"
             android:layout_marginLeft="10dp"
             android:onClick="@{clickAction::onClick}"
-            android:text="80%"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_volume_fix_50"
-            app:layout_constraintLeft_toRightOf="@+id/btn_volume_fix_50"
-            app:layout_constraintTop_toTopOf="@+id/btn_volume_fix_50" />
+            android:text="100%"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_volume_fix_80"
+            app:layout_constraintLeft_toRightOf="@+id/btn_volume_fix_80"
+            app:layout_constraintTop_toTopOf="@+id/btn_volume_fix_80" />
 
 
         <Button
@@ -77,8 +77,8 @@
             android:layout_marginTop="10dp"
             android:onClick="@{clickAction::onClick}"
             android:text="音量设置页面"
-            app:layout_constraintLeft_toLeftOf="@+id/btn_volume_fix_50"
-            app:layout_constraintTop_toBottomOf="@+id/btn_volume_fix_50" />
+            app:layout_constraintLeft_toLeftOf="@+id/btn_volume_fix_80"
+            app:layout_constraintTop_toBottomOf="@+id/btn_volume_fix_80" />
 
         <TextView
             android:id="@+id/tv_lauch_app"

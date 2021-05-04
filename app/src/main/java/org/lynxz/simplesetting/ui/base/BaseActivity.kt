@@ -1,6 +1,8 @@
 package org.lynxz.simplesetting.ui.base
 
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -189,5 +191,13 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionCallback {
             containerView.paddingLeft, containerView.paddingTop + height,
             containerView.paddingRight, containerView.paddingBottom
         )
+    }
+
+    override fun getResources(): Resources { //还原字体大小
+        val res: Resources = super.getResources()
+        val configuration = res.configuration.apply { fontScale = 1.0f }
+//        createConfigurationContext(configuration)
+        res.updateConfiguration(configuration, res.getDisplayMetrics())
+        return res
     }
 }
