@@ -142,7 +142,7 @@ abstract class BaseFragment : Fragment() {
             return
         }
 
-        val height = ScreenUtil.getStatusBarHeight(act)
+        val height = ScreenUtil.getStatusBarHeightPx(act)
         // Logger.d("height $height")
         containerView.setPadding(
             containerView.paddingLeft, containerView.paddingTop + height,

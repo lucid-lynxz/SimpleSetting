@@ -1,8 +1,6 @@
 package org.lynxz.simplesetting.ui.base
 
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -10,7 +8,6 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.noober.background.BackgroundLibrary
-import kotlinx.android.synthetic.main.activity_base.*
 import org.lynxz.simplesetting.R
 import org.lynxz.utils.ScreenUtil
 import org.lynxz.utils.log.LoggerUtil
@@ -53,7 +50,7 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionCallback {
             setContentView(R.layout.activity_base)
 
             getContentFragment()?.let {
-                rl_base_container.visibility = View.VISIBLE
+                findViewById<View>(R.id.rl_base_container).visibility = View.VISIBLE
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.rl_base_container, it)
@@ -185,19 +182,18 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionCallback {
             return
         }
 
-        val height = ScreenUtil.getStatusBarHeight(this)
+        val height = ScreenUtil.getStatusBarHeightPx(this)
         // Logger.d("height $height")
         containerView.setPadding(
             containerView.paddingLeft, containerView.paddingTop + height,
             containerView.paddingRight, containerView.paddingBottom
         )
     }
-
-    override fun getResources(): Resources { //还原字体大小
-        val res: Resources = super.getResources()
-        val configuration = res.configuration.apply { fontScale = 1.0f }
-//        createConfigurationContext(configuration)
-        res.updateConfiguration(configuration, res.getDisplayMetrics())
-        return res
-    }
+//    override fun getResources(): Resources { //还原字体大小
+//        val res: Resources = super.getResources()
+//        val configuration = res.configuration.apply { fontScale = 1.0f }
+////        createConfigurationContext(configuration)
+//        res.updateConfiguration(configuration, res.getDisplayMetrics())
+//        return res
+//    }
 }
