@@ -1,8 +1,8 @@
 package org.lynxz.simplesetting.util
 
 import android.content.Context
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.os.Build
 
 
 object CommonUtil {
@@ -12,7 +12,7 @@ object CommonUtil {
      * */
     fun launch(context: Context, pkgName: String): Boolean {
         val packageManager = context.packageManager
-        val exist = checkPackInfo(context, pkgName)
+        val exist = isAppInstalled(context, pkgName)
         if (exist) {
             val intent = packageManager.getLaunchIntentForPackage(pkgName)
             context.startActivity(intent)
@@ -25,13 +25,23 @@ object CommonUtil {
      *
      * @param pkgName app包名
      */
-    fun checkPackInfo(context: Context, pkgName: String): Boolean {
-        var packageInfo: PackageInfo? = null
-        try {
-            packageInfo = context.packageManager.getPackageInfo(pkgName, 0)
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+    fun isAppInstalled(context: Context, pkgName: String): Boolean {
+        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // TIRAMISU --> android 13 --> api 33
+        if (Build.VERSION.SDK_INT >= 33) { // TIRAMISU --> android 13 --> api 33
+            try {
+                context.packageManager.getApplicationInfo(pkgName, 0)
+                return true
+            } catch (e: PackageManager.NameNotFoundException) {
+                return false
+            }
+        } else {
+            val packageManager = context.packageManager
+            try {
+                packageManager.getPackageInfo(pkgName, 0)
+                return true
+            } catch (e: PackageManager.NameNotFoundException) {
+                return false
+            }
         }
-        return packageInfo != null
     }
 }

@@ -1,6 +1,5 @@
 package org.lynxz.simplesetting.ui
 
-import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -14,7 +13,11 @@ import org.lynxz.simplesetting.R
 import org.lynxz.simplesetting.databinding.ActivityMainBinding
 import org.lynxz.simplesetting.showToast
 import org.lynxz.simplesetting.ui.base.BaseBindingActivity
-import org.lynxz.simplesetting.util.*
+import org.lynxz.simplesetting.util.CommonUtil
+import org.lynxz.simplesetting.util.NetworkUtils
+import org.lynxz.simplesetting.util.OnSoundIndexChanged
+import org.lynxz.simplesetting.util.SoundInfoBean
+import org.lynxz.simplesetting.util.SoundUtil
 import org.lynxz.utils.ShellUtil
 import org.lynxz.utils.otherwise
 import org.lynxz.utils.yes
@@ -56,7 +59,12 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>(), View.OnClickLis
             R.id.btn_open_wifi -> NetworkUtils.setWifiEnabled(this, true).yes {
                 showToast("已开启wifi")
             }.otherwise {
-                showToast("开启wifi失败,请重试")
+                // showToast("开启wifi失败,请手动开启")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startActivity(Intent(Settings.Panel.ACTION_WIFI))
+                } else {
+                    startActivity(Intent(Settings.ACTION_WIFI_SETTINGS));
+                }
             }
         }
     }
