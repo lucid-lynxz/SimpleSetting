@@ -12,7 +12,25 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-    <uses-permission android:name="android.permission.GET_PACKAGES " />
+    <!--    查询获取所有已安装app列表-->
+    <uses-permission android:name="android.permission.GET_PACKAGES" />
+    <!--    android11以后需要使用以下权限, 其中 QUERY_ALL_PACKAGES 会提示使用 queries 标签 替代 -->
+    <!--    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />-->
+
+    <!--    若明确知道要查询的包名, 则可使用 queries 标签替代 -->
+    <queries>
+        <package android:name="com.xiaomi.mitime" />
+        <package android:name="org.lynxz.forwardsms" />
+    </queries>
+
+    <!-- 如果不知道应用的包名，只是想查询具有某种功能的应用, 可通过intent标签进行 -->
+    <!-- 注意: 支持的 <data>中也只能有这些属性: mimeType,scheme 和host -->
+    <!-- 另外, 几乎所有应用都会用到 android.intent.action.MAIN 这个action, 因此可以把它作为查询条件绕过 QUERY_ALL_PACKAGES 权限  -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
 
     <!--    <uses-permission android:name="android.permission.INTERNET" />-->
     <!--    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />-->
